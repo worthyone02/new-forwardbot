@@ -41,18 +41,20 @@ async def relay(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await context.bot.send_voice(DEST_CHAT_ID, msg.voice.file_id, caption=caption)
         elif msg.document:
             await context.bot.send_document(DEST_CHAT_ID, msg.document.file_id, caption=caption)
+        else:
+            log.info("Message type not handled.")
     except Exception as e:
         log.error(f"Error relaying message: {e}")
 
-async def main():
+def main():
     if not BOT_TOKEN or not SOURCE_CHAT_ID or not DEST_CHAT_ID or not TOPIC_ID:
         log.error("Missing BOT_TOKEN, SOURCE_CHAT_ID, DEST_CHAT_ID, or TOPIC_ID.")
         raise SystemExit(1)
 
     app = ApplicationBuilder().token(BOT_TOKEN).build()
     app.add_handler(MessageHandler(filters.ALL, relay))
-    await app.run_polling()
+    log.info("Bot started...")
+    app.run_polling()
 
 if __name__ == "__main__":
-    import asyncio
-    asyncio.get_event_loop().run_until_complete(main())
+    main()
